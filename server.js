@@ -177,11 +177,12 @@
             // Capture Screenshot of the marks area safely
             const tableElement = await page.$('table'); 
             let imageBase64 = null;
-            if (tableElement) {
-                const imageBuffer = await tableElement.screenshot();
-                imageBase64 = imageBuffer.toString('base64');
-            }
-
+            try {
+            const imageBuffer = await page.screenshot({ fullPage: true });
+            imageBase64 = imageBuffer.toString('base64');
+        } catch (err) {
+            console.error('Screenshot failed:', err.message);
+        }
             // --- 3. ADVANCED TABLE SCRAPING (Cheerio) ---
             const finalHtml = await page.content();
             const $ = cheerio.load(finalHtml);
@@ -270,6 +271,7 @@
         }
     });
 
+    
     const PORT = process.env.PORT || 3000;
     app.listen(PORT, () => {
         console.log(`Server is LIVE! Go to: http://localhost:${PORT}`);
